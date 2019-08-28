@@ -1,16 +1,32 @@
 apply plugin: 'com.android.library'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/xiaowei.song/opensource-workspace/BGAQRCode-Android/zxingdemo/zxingdemo.jks')
+            storePassword '123456'
+            keyAlias = 'key1'
+            keyPassword '123456'
+        }
+    }
     compileSdkVersion ANDROID_BUILD_SDK_VERSION as int
 
     defaultConfig {
         minSdkVersion ANDROID_BUILD_MIN_SDK_VERSION as int
         targetSdkVersion ANDROID_BUILD_TARGET_SDK_VERSION as int
     }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 dependencies {
-    compile 'com.google.zxing:core:3.3.3'
+    api 'com.google.zxing:core:3.3.3'
     if(hasProperty("publishAar")) {
         compile "cn.bingoogolapple:bga-qrcode-core:${VERSION_NAME}"
     } else {

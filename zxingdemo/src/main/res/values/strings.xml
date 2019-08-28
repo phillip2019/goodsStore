@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ZXingDemo</string>
+    <string name="app_name">GoodsStore</string>
+    <string name="scanGoodsInfo">录入或查询商品信息</string>
+    <string name="save">保存</string>
+    <string name="bigGoodsImageText">商品大图</string>
+    <string name="queryGoodsHitText">请输入货物编号</string>
+    <string name="showGoodsCount">商品总数量</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+
+    <string name="scanGoodsInfoDel">删除商品信息</string>
 </resources>

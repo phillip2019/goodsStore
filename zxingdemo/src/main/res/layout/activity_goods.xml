@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchMatch.Vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <ScrollView style="@style/MatchMatch">
+
+        <LinearLayout style="@style/MatchMatch.Vertical">
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="商品编号"
+                    />
+
+                <EditText
+                    android:id="@+id/goodsId"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="number" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="类别" />
+
+                <EditText
+                    android:id="@+id/goodsCategory"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="textAutoComplete" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="名称" />
+
+                <EditText
+                    android:id="@+id/goodsName"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="批发价" />
+
+                <EditText
+                    android:id="@+id/tradePrice"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="库存数量" />
+
+                <EditText
+                    android:id="@+id/inventoryCounts"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="number" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="建议零售价1" />
+
+                <EditText
+                    android:id="@+id/retailPrice1"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="建议零售价2" />
+
+                <EditText
+                    android:id="@+id/retailPrice2"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="建议零售价3" />
+
+                <EditText
+                    android:id="@+id/retailPrice3"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="实物图片" />
+
+                <ImageView
+                    android:id="@+id/goodsImage"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="6"
+                    android:layout_margin="10dp"
+                    android:src="@mipmap/holder" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="备注" />
+
+                <EditText
+                    android:id="@+id/remark"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/AutoWrapTv"
+                    android:id="@+id/btnGoodsSave"
+                    android:ems="10"
+                    android:text="@string/save" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

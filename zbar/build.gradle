@@ -1,6 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/xiaowei.song/opensource-workspace/BGAQRCode-Android/zxingdemo/zxingdemo.jks')
+            storePassword '123456'
+            keyAlias = 'key1'
+            keyPassword '123456'
+        }
+    }
     compileSdkVersion ANDROID_BUILD_SDK_VERSION as int
 
     defaultConfig {
@@ -11,6 +19,14 @@ android {
 
 
     def isBuildSo = false
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
     if (isBuildSo) { // 构建生成 so 文件
         sourceSets {
             main {

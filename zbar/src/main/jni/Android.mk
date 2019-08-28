@@ -43,7 +43,7 @@ LOCAL_MODULE := zbarjni
 LOCAL_SRC_FILES := zbarjni.c \
 		   zbar/img_scanner.c \
 		   zbar/decoder.c \
-		   zbar/image.c \
+		   zbar/imagePath.c \
 		   zbar/symbol.c \
 		   zbar/convert.c \
 		   zbar/config.c \

@@ -5110,7 +5110,7 @@ _LT_EOF
       _LT_TAGVAR(exclude_expsyms, $1)=['[_]+GLOBAL_OFFSET_TABLE_|[_]+GLOBAL__[FID]_.*|[_]+head_[A-Za-z0-9_]+_dll|[A-Za-z0-9_]+_dll_iname']
 
       if $LD --help 2>&1 | $GREP 'auto-import' > /dev/null; then
-        _LT_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags -o $output_objdir/$soname $wl--enable-auto-image-base -Xlinker --out-implib -Xlinker $lib'
+        _LT_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags -o $output_objdir/$soname $wl--enable-auto-imagePath-base -Xlinker --out-implib -Xlinker $lib'
 	# If the export-symbols file already is a .def file, use it as
 	# is; otherwise, prepend EXPORTS...
 	_LT_TAGVAR(archive_expsym_cmds, $1)='if _LT_DLL_DEF_P([$export_symbols]); then
@@ -5119,7 +5119,7 @@ _LT_EOF
           echo EXPORTS > $output_objdir/$soname.def;
           cat $export_symbols >> $output_objdir/$soname.def;
         fi~
-        $CC -shared $output_objdir/$soname.def $libobjs $deplibs $compiler_flags -o $output_objdir/$soname $wl--enable-auto-image-base -Xlinker --out-implib -Xlinker $lib'
+        $CC -shared $output_objdir/$soname.def $libobjs $deplibs $compiler_flags -o $output_objdir/$soname $wl--enable-auto-imagePath-base -Xlinker --out-implib -Xlinker $lib'
       else
 	_LT_TAGVAR(ld_shlibs, $1)=no
       fi
@@ -5164,13 +5164,13 @@ _LT_EOF
       _LT_TAGVAR(hardcode_libdir_flag_spec, $1)='$wl-rpath,$libdir'
       _LT_TAGVAR(export_dynamic_flag_spec, $1)='$wl-E'
       # Hack: On Interix 3.x, we cannot compile PIC because of a broken gcc.
-      # Instead, shared libraries are loaded at an image base (0x10000000 by
+      # Instead, shared libraries are loaded at an imagePath base (0x10000000 by
       # default) and relocated if they conflict, which is a slow very memory
       # consuming and fragmenting process.  To avoid this, we pick a random,
-      # 256 KiB-aligned image base between 0x50000000 and 0x6FFC0000 at link
+      # 256 KiB-aligned imagePath base between 0x50000000 and 0x6FFC0000 at link
       # time.  Moving up from 0x10000000 also allows more sbrk(2) space.
-      _LT_TAGVAR(archive_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
-      _LT_TAGVAR(archive_expsym_cmds, $1)='sed "s|^|_|" $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--retain-symbols-file,$output_objdir/$soname.expsym $wl--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
+      _LT_TAGVAR(archive_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--imagePath-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
+      _LT_TAGVAR(archive_expsym_cmds, $1)='sed "s|^|_|" $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--retain-symbols-file,$output_objdir/$soname.expsym $wl--imagePath-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
       ;;
 
     gnu* | linux* | tpf* | k*bsd*-gnu | kopensolaris*-gnu)
@@ -6684,7 +6684,7 @@ if test yes != "$_lt_caught_CXX_error"; then
 	  _LT_TAGVAR(enable_shared_with_static_runtimes, $1)=yes
 
 	  if $LD --help 2>&1 | $GREP 'auto-import' > /dev/null; then
-	    _LT_TAGVAR(archive_cmds, $1)='$CC -shared -nostdlib $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $output_objdir/$soname $wl--enable-auto-image-base -Xlinker --out-implib -Xlinker $lib'
+	    _LT_TAGVAR(archive_cmds, $1)='$CC -shared -nostdlib $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $output_objdir/$soname $wl--enable-auto-imagePath-base -Xlinker --out-implib -Xlinker $lib'
 	    # If the export-symbols file already is a .def file, use it as
 	    # is; otherwise, prepend EXPORTS...
 	    _LT_TAGVAR(archive_expsym_cmds, $1)='if _LT_DLL_DEF_P([$export_symbols]); then
@@ -6693,7 +6693,7 @@ if test yes != "$_lt_caught_CXX_error"; then
               echo EXPORTS > $output_objdir/$soname.def;
               cat $export_symbols >> $output_objdir/$soname.def;
             fi~
-            $CC -shared -nostdlib $output_objdir/$soname.def $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $output_objdir/$soname $wl--enable-auto-image-base -Xlinker --out-implib -Xlinker $lib'
+            $CC -shared -nostdlib $output_objdir/$soname.def $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $output_objdir/$soname $wl--enable-auto-imagePath-base -Xlinker --out-implib -Xlinker $lib'
 	  else
 	    _LT_TAGVAR(ld_shlibs, $1)=no
 	  fi
@@ -6891,13 +6891,13 @@ if test yes != "$_lt_caught_CXX_error"; then
 	_LT_TAGVAR(hardcode_libdir_flag_spec, $1)='$wl-rpath,$libdir'
 	_LT_TAGVAR(export_dynamic_flag_spec, $1)='$wl-E'
 	# Hack: On Interix 3.x, we cannot compile PIC because of a broken gcc.
-	# Instead, shared libraries are loaded at an image base (0x10000000 by
+	# Instead, shared libraries are loaded at an imagePath base (0x10000000 by
 	# default) and relocated if they conflict, which is a slow very memory
 	# consuming and fragmenting process.  To avoid this, we pick a random,
-	# 256 KiB-aligned image base between 0x50000000 and 0x6FFC0000 at link
+	# 256 KiB-aligned imagePath base between 0x50000000 and 0x6FFC0000 at link
 	# time.  Moving up from 0x10000000 also allows more sbrk(2) space.
-	_LT_TAGVAR(archive_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
-	_LT_TAGVAR(archive_expsym_cmds, $1)='sed "s|^|_|" $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--retain-symbols-file,$output_objdir/$soname.expsym $wl--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
+	_LT_TAGVAR(archive_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--imagePath-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
+	_LT_TAGVAR(archive_expsym_cmds, $1)='sed "s|^|_|" $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-h,$soname $wl--retain-symbols-file,$output_objdir/$soname.expsym $wl--imagePath-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
 	;;
       irix5* | irix6*)
         case $cc_basename in

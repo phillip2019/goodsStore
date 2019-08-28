@@ -6,7 +6,7 @@ zbar_libzbar_la_LIBADD = $(LTLIBICONV)
 
 zbar_libzbar_la_SOURCES = zbar/debug.h zbar/config.c \
     zbar/error.h zbar/error.c zbar/symbol.h zbar/symbol.c \
-    zbar/image.h zbar/image.c zbar/convert.c \
+    zbar/imagePath.h zbar/imagePath.c zbar/convert.c \
     zbar/processor.c zbar/processor.h zbar/processor/lock.c \
     zbar/refcnt.h zbar/refcnt.c zbar/timer.h zbar/mutex.h \
     zbar/event.h zbar/thread.h \

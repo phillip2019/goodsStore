@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/xiaowei.song/opensource-workspace/BGAQRCode-Android/zxingdemo/zxingdemo.jks')
+            storePassword '123456'
+            keyAlias = 'key1'
+            keyPassword '123456'
+        }
+    }
     compileSdkVersion ANDROID_BUILD_SDK_VERSION as int
 
     defaultConfig {
@@ -18,6 +26,10 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
 }

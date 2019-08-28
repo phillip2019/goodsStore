@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/MatchMatch.Vertical">
+
+    <include layout="@layout/toolbar"/>
+
+    <ScrollView
+        style="@style/MatchMatch">
+
+    <LinearLayout
+        style="@style/MatchMatch.Vertical">
+
+        <ImageView
+            android:id="@+id/bigGoodsImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:contentDescription="@string/bigGoodsImageText"
+            android:src="@mipmap/holder" />
+    </LinearLayout>
+    </ScrollView>
+</LinearLayout>
