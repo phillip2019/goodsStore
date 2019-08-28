@@ -1,6 +1,7 @@
-package cn.bingoogolapple.qrcode.zxingdemo;
+package cn.bingoogolapple.qrcode.zxingdemo.ui.common;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -30,6 +31,8 @@ import java.util.Map;
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
 import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
+import cn.bingoogolapple.qrcode.zxingdemo.MyApplication;
+import cn.bingoogolapple.qrcode.zxingdemo.R;
 import cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant;
 import cn.bingoogolapple.qrcode.zxingdemo.utils.FileUtil;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -75,10 +78,19 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
 
     private ZXingView mZXingView;
 
+    public static void actionStart(Context context, String goodsId) {
+        Intent intent = new Intent(context, GoodsActivity.class);
+        intent.putExtra(CURRENT_GOODS_ID, goodsId);
+        context.startActivity(intent);
+    }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goods);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getTitle());
+
         init();
 
         // 长按，开启后置摄像头拍照

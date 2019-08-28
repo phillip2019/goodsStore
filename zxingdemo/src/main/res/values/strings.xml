@@ -6,8 +6,9 @@
     <string name="bigGoodsImageText">商品大图</string>
     <string name="queryGoodsHitText">请输入货物编号</string>
     <string name="showGoodsCount">商品总数量</string>
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
+    <string name="title_item_list">商品列表</string>
+    <string name="title_item_detail">商品详情</string>
 
     <string name="scanGoodsInfoDel">删除商品信息</string>
+    <string name="goodsList">商品列表</string>
 </resources>

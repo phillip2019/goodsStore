@@ -52,6 +52,17 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout4"
+        style="@style/MatchWrap.Horizontal"
+        android:layout_below="@id/linearLayout2"
+        android:gravity="center_horizontal">
+        <TextView
+            android:id="@+id/goodsList"
+            style="@style/MatchWrapTv"
+            android:text="@string/goodsList"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout3"
         style="@style/MatchWrap.Horizontal"
         android:gravity="center_horizontal"

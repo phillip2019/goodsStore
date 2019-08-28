@@ -116,7 +116,7 @@ public class GoodsDTO implements Serializable {
 
 
     /**
-     * 得到简短商品编号
+     * 简短商品编号
      * @param id
      * @return
      */

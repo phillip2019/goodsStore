@@ -29,17 +29,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ItemListActivity"
+            android:name=".ui.list.GoodsItemListActivity"
             android:label="@string/title_item_list"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".ItemDetailActivity"
+            android:name=".ui.list.ItemDetailActivity"
             android:label="@string/title_item_detail"
-            android:parentActivityName=".ItemListActivity"
+            android:parentActivityName=".ui.list.GoodsItemListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cn.bingoogolapple.qrcode.zxingdemo.ItemListActivity" />
+                android:value="cn.bingoogolapple.qrcode.zxingdemo.ui.list.GoodsItemListActivity" />
         </activity>
         <activity
             android:name=".MainActivity"
@@ -51,13 +51,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TestScanActivity" />
         <activity
-            android:name=".TestGeneratectivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".GoodsActivity" />
+            android:name=".ui.common.GoodsActivity"
+            android:label="@string/title_item_detail"
+            />
         <activity android:name=".GoodsScanActivity" />
-        <activity android:name=".GoodsImageActivity" />
+        <activity android:name=".ui.common.GoodsImageActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

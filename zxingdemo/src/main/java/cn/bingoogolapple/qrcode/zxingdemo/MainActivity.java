@@ -22,11 +22,11 @@ import java.util.Map;
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil;
 import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
 import cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant;
+import cn.bingoogolapple.qrcode.zxingdemo.ui.common.GoodsActivity;
+import cn.bingoogolapple.qrcode.zxingdemo.ui.list.GoodsItemListActivity;
 import cn.bingoogolapple.qrcode.zxingdemo.utils.FileUtil;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
-
-import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.CURRENT_GOODS_ID;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 break;
             case R.id.btnSearchGoodsInfo:
                 searchGoodsInfo(view);
+                break;
+            case R.id.goodsList:
+                GoodsItemListActivity.actionStart(this);
                 break;
             default:
                 break;
@@ -178,8 +181,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             searchGoodsInfoText.setText("");
             return;
         }
-        Intent goodsIntent = new Intent(this, GoodsActivity.class);
-        goodsIntent.putExtra(CURRENT_GOODS_ID, matchGoodsId);
-        startActivity(goodsIntent);
+        GoodsActivity.actionStart(this, matchGoodsId);
     }
 }

@@ -1,4 +1,4 @@
-package cn.bingoogolapple.qrcode.zxingdemo;
+package cn.bingoogolapple.qrcode.zxingdemo.ui.common;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,13 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+
+import cn.bingoogolapple.qrcode.zxingdemo.R;
 
 import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.CURRENT_GOODS_ID;
 import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.CURRENT_IMAGE_PATH;
