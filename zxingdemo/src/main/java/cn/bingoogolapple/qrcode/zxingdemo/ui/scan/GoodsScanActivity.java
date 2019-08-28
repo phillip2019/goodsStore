@@ -1,4 +1,4 @@
-package cn.bingoogolapple.qrcode.zxingdemo;
+package cn.bingoogolapple.qrcode.zxingdemo.ui.scan;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.util.Log;
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
+import cn.bingoogolapple.qrcode.zxingdemo.R;
 import cn.bingoogolapple.qrcode.zxingdemo.ui.common.GoodsActivity;
 
 public class GoodsScanActivity extends AppCompatActivity implements QRCodeView.Delegate {

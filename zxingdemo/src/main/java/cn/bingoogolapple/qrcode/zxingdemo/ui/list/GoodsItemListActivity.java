@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.SEARCH_GOODS_ID_OR_NAME;
+
 /**
  * An activity representing a list of Items. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -42,14 +45,18 @@ public class GoodsItemListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
-    public static void actionStart(Context context) {
+    public static final int VIEW_TYPE = -1;
+
+    public static void actionStart(Context context, String goodsIdOrName) {
         Intent intent = new Intent(context, GoodsItemListActivity.class);
+        intent.putExtra(SEARCH_GOODS_ID_OR_NAME, goodsIdOrName);
         context.startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_goods_item_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -70,16 +77,35 @@ public class GoodsItemListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        recyclerView.setItemViewCacheSize(200);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        String goodsIdOrName = getIntent().getStringExtra(SEARCH_GOODS_ID_OR_NAME);
+        boolean filter = true;
+        if (StringUtils.isBlank(goodsIdOrName)) {
+            filter = false;
+        }
         MyApplication app = (MyApplication) this.getApplication();
         List<GoodsDTO> items = new ArrayList<>(app.goodsMap.size());
+        GoodsDTO goods;
         for (Map.Entry<String, GoodsDTO> entry : app.goodsMap.entrySet()) {
-            items.add(entry.getValue());
+            goods = entry.getValue();
+            if (filter) {
+                if (StringUtils.containsIgnoreCase(goods.getId(), goodsIdOrName)) {
+                    items.add(goods);
+                } else if (StringUtils.containsIgnoreCase(goods.getName(), goodsIdOrName)) {
+                    items.add(goods);
+                }
+            } else {
+                items.add(goods);
+            }
         }
         recyclerView.setAdapter(new GoodsItemRecyclerViewAdapter(this, items, mTwoPane));
     }
 
     public static class GoodsItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<GoodsItemRecyclerViewAdapter.ViewHolder> {
+            extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private final GoodsItemListActivity mParentActivity;
         private final List<GoodsDTO> mGoodsList;
@@ -116,29 +142,48 @@ public class GoodsItemListActivity extends AppCompatActivity {
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            //在这里根据不同的viewType进行引入不同的布局
+            if (viewType == VIEW_TYPE) {
+                View emptyView = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_empty, parent, false);
+                return new RecyclerView.ViewHolder(emptyView) {};
+            }
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.goods_list_content, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            String mCurrentImagePath = mGoodsList.get(position).getImagePath();
-            if (StringUtils.isNotBlank(mCurrentImagePath)) {
-                FileUtil.setImage4ViewBitmap(holder.mGoodsImageView, mCurrentImagePath);
+        public int getItemViewType(int position) {
+            if (mGoodsList.size() == 0) {
+                return VIEW_TYPE;
             }
+            return super.getItemViewType(position);
+        }
 
-            holder.mGoodsIdView.setText(mGoodsList.get(position).getId());
-            holder.mGoodsShortView.setText(GoodsDTO.getShortID(mGoodsList.get(position).getId()));
-            holder.mGoodsNameView.setText(mGoodsList.get(position).getName());
+        @Override
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof ViewHolder) {
+                ViewHolder myHolder = (ViewHolder) holder;
+                String mCurrentImagePath = mGoodsList.get(position).getImagePath();
+                if (StringUtils.isNotBlank(mCurrentImagePath)) {
+                    FileUtil.setImage4ViewBitmap(myHolder.mGoodsImageView, mCurrentImagePath);
+                }
 
-            holder.itemView.setTag(mGoodsList.get(position));
-            holder.itemView.setOnClickListener(mOnClickListener);
+                myHolder.mGoodsIdView.setText(mGoodsList.get(position).getId());
+                myHolder.mGoodsShortView.setText(GoodsDTO.getShortID(mGoodsList.get(position).getId()));
+                myHolder.mGoodsNameView.setText(mGoodsList.get(position).getName());
+
+                myHolder.itemView.setTag(mGoodsList.get(position));
+                myHolder.itemView.setOnClickListener(mOnClickListener);
+            }
         }
 
         @Override
         public int getItemCount() {
+            if (mGoodsList.size() == 0) {
+                return 1;
+            }
             return mGoodsList.size();
         }
 
@@ -156,5 +201,6 @@ public class GoodsItemListActivity extends AppCompatActivity {
                 mGoodsNameView = (TextView) view.findViewById(R.id.goodsListName);
             }
         }
+
     }
 }

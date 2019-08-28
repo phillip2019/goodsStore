@@ -24,6 +24,7 @@ import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
 import cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant;
 import cn.bingoogolapple.qrcode.zxingdemo.ui.common.GoodsActivity;
 import cn.bingoogolapple.qrcode.zxingdemo.ui.list.GoodsItemListActivity;
+import cn.bingoogolapple.qrcode.zxingdemo.ui.scan.GoodsScanActivity;
 import cn.bingoogolapple.qrcode.zxingdemo.utils.FileUtil;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -34,6 +35,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private EditText searchGoodsInfoText;
+
+    private EditText searchGoodsIdOrNameInfoText;
+
+    private TextView totalGoodsInfoTextView;
+
 
     private MyApplication app;
 
@@ -52,6 +58,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        totalGoodsInfoTextView.setText(String.format("目前库中共存在%d 种商品", app.goodsMap.keySet().size()));
     }
 
     @Override
@@ -80,8 +93,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         searchGoodsInfoText = (EditText)findViewById(R.id.searchGoodsInfo);
 
-        TextView totalGoodsInfoTextView = findViewById(R.id.totalGoodsInfo);
-        totalGoodsInfoTextView.setText(String.format("目前库中共存在%d 种商品", app.goodsMap.keySet().size()));
+        searchGoodsIdOrNameInfoText = (EditText)findViewById(R.id.searchIdOrNameGoodsInfo);
+
+        totalGoodsInfoTextView = findViewById(R.id.totalGoodsInfo);
     }
 
     public void onClick(View view) {
@@ -92,8 +106,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             case R.id.btnSearchGoodsInfo:
                 searchGoodsInfo(view);
                 break;
+            case R.id.btnSearchIdOrNameGoodsInfo:
+                searchGoodsIdOrNameInfo(view);
+                break;
             case R.id.goodsList:
-                GoodsItemListActivity.actionStart(this);
+                GoodsItemListActivity.actionStart(this, null);
                 break;
             default:
                 break;
@@ -182,5 +199,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             return;
         }
         GoodsActivity.actionStart(this, matchGoodsId);
+    }
+
+    public void searchGoodsIdOrNameInfo(View view) {
+        String goodsIdOrName = searchGoodsIdOrNameInfoText.getText().toString().trim();
+        if (StringUtils.isBlank(goodsIdOrName)) {
+            Toast.makeText(MainActivity.this, "商品编号不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        GoodsItemListActivity.actionStart(this, goodsIdOrName);
     }
 }

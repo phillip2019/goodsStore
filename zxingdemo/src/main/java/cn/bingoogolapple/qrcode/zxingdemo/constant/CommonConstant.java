@@ -27,4 +27,6 @@ public class CommonConstant implements Serializable {
 
     public static final String CURRENT_GOODS_ID = "cn.bingoogolapple.qrcode.currentGoodsId";
 
+    public static final String SEARCH_GOODS_ID_OR_NAME = "cn.bingoogolapple.qrcode.searchGoodsIdOrName";
+
 }

@@ -8,6 +8,9 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -24,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
+import cn.bingoogolapple.qrcode.zxingdemo.R;
 import cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant;
 
 import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.APP_IMAGE_DIRECTORY;
@@ -234,71 +238,77 @@ public class FileUtil {
     }
 
     public static void setImage4ViewBitmap(ImageView v, String mCurrentPhotoPath) {
-        // Get the dimensions of the View
-        int targetW = v.getWidth();
-        int targetH = v.getHeight();
-        Log.e(TAG, "宽度为:" + targetW);
-        Log.e(TAG, "高度为:" + targetH);
-        if (targetH == 0) {
-            targetH = 200;
-            targetW = 150;
-        }
-
-        //根据图片的filepath获取到一个ExifInterface的对象
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(mCurrentPhotoPath);
-        } catch (IOException e) {
-            Log.e(TAG, "获取ExifInterface图像文件信息失败", e);
-        }
-        int degree = 0;
-        if (exif != null) {
-            // 读取图片中相机方向信息
-            int ori = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_UNDEFINED);
-            // 计算旋转角度
-            switch (ori) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    degree = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    degree = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    degree = 270;
-                    break;
-                default:
-                    degree = 0;
-                    break;
-            }
-        }
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-        if (degree != 0) {
-            // 旋转图片
-            Matrix m = new Matrix();
-            m.postRotate(degree);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                    bitmap.getHeight(), m, true);
-        }
-
-        v.setImageBitmap(bitmap);
+        Glide.with(v.getContext())
+                .load(mCurrentPhotoPath)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.holder)
+                .centerCrop()
+                .into(v);
+//        // Get the dimensions of the View
+//        int targetW = v.getWidth();
+//        int targetH = v.getHeight();
+//        Log.e(TAG, "宽度为:" + targetW);
+//        Log.e(TAG, "高度为:" + targetH);
+//        if (targetH == 0) {
+//            targetH = 200;
+//            targetW = 150;
+//        }
+//
+//        //根据图片的filepath获取到一个ExifInterface的对象
+//        ExifInterface exif = null;
+//        try {
+//            exif = new ExifInterface(mCurrentPhotoPath);
+//        } catch (IOException e) {
+//            Log.e(TAG, "获取ExifInterface图像文件信息失败", e);
+//        }
+//        int degree = 0;
+//        if (exif != null) {
+//            // 读取图片中相机方向信息
+//            int ori = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+//                    ExifInterface.ORIENTATION_UNDEFINED);
+//            // 计算旋转角度
+//            switch (ori) {
+//                case ExifInterface.ORIENTATION_ROTATE_90:
+//                    degree = 90;
+//                    break;
+//                case ExifInterface.ORIENTATION_ROTATE_180:
+//                    degree = 180;
+//                    break;
+//                case ExifInterface.ORIENTATION_ROTATE_270:
+//                    degree = 270;
+//                    break;
+//                default:
+//                    degree = 0;
+//                    break;
+//            }
+//        }
+//
+//        // Get the dimensions of the bitmap
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//        int photoW = bmOptions.outWidth;
+//        int photoH = bmOptions.outHeight;
+//
+//        // Determine how much to scale down the image
+//        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+//
+//        // Decode the image file into a Bitmap sized to fill the View
+//        bmOptions.inJustDecodeBounds = false;
+//        bmOptions.inSampleSize = scaleFactor;
+//        bmOptions.inPurgeable = true;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//
+//        if (degree != 0) {
+//            // 旋转图片
+//            Matrix m = new Matrix();
+//            m.postRotate(degree);
+//            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+//                    bitmap.getHeight(), m, true);
+//        }
+//
+//        v.setImageBitmap(bitmap);
     }
 
 }

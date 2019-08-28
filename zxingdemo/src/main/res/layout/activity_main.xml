@@ -43,7 +43,39 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         style="@style/MatchWrap.Horizontal"
+        android:gravity="center_horizontal"
         android:layout_below="@id/linearLayout1"
+        >
+
+        <EditText
+            style="@style/SearchGoodsInfoEditText"
+            android:id="@+id/searchIdOrNameGoodsInfo"
+            android:hint="@string/queryGoodsIdOrNameHitText"
+            android:textColorHint="@android:color/white"
+            android:layout_weight="7"
+            android:layout_width="0dp"
+            android:inputType="text" />
+
+        <ImageButton
+            android:id="@+id/btnSearchIdOrNameGoodsInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:background="@drawable/selector_btn_orange"
+            android:onClick="searchGoodsIdOrNameInfo"
+            android:paddingLeft="2dp"
+            android:paddingTop="2dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="2dp"
+            android:src="@android:drawable/ic_menu_search" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        style="@style/MatchWrap.Horizontal"
+        android:layout_below="@id/linearLayout2"
         android:gravity="center_horizontal">
         <TextView
             android:id="@+id/scanGoodsInfo"
@@ -54,7 +86,7 @@
     <LinearLayout
         android:id="@+id/linearLayout4"
         style="@style/MatchWrap.Horizontal"
-        android:layout_below="@id/linearLayout2"
+        android:layout_below="@id/linearLayout3"
         android:gravity="center_horizontal">
         <TextView
             android:id="@+id/goodsList"
@@ -63,7 +95,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout3"
+        android:id="@+id/linearLayout5"
         style="@style/MatchWrap.Horizontal"
         android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
