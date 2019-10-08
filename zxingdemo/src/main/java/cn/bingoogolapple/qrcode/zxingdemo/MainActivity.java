@@ -2,6 +2,7 @@ package cn.bingoogolapple.qrcode.zxingdemo;
 
 import android.Manifest;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,10 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
+import org.litepal.LitePal;
 
 import java.util.Iterator;
 import java.util.List;
@@ -36,9 +39,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private EditText searchGoodsInfoText;
 
-    private EditText searchGoodsIdOrNameInfoText;
+    private EditText searchGoodsNumOrNameInfoText;
 
     private TextView totalGoodsInfoTextView;
+
+    private TextView btnScanGoodsInfoTextView;
+
+    private ImageButton btnSearchGoodsInfo;
+
+    private ImageButton btnSearchNumOrNameGoodsInfo;
+
+    private TextView goodsListTextView;
 
 
     private MyApplication app;
@@ -50,8 +61,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         BGAQRCodeUtil.setDebug(false);
+
         init();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -64,7 +77,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     protected void onResume() {
         super.onResume();
-        totalGoodsInfoTextView.setText(String.format("目前库中共存在%d 种商品", app.goodsMap.keySet().size()));
+        // 读取数据库中项目条目
+        int size = LitePal.count(GoodsDTO.class);
+        totalGoodsInfoTextView.setText(String.format("目前库中共存在%d 种商品", size));
     }
 
     @Override
@@ -73,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             case R.id.mScanGoodsInfo:
                 startActivity(new Intent(this, GoodsScanActivity.class));
                 break;
+            case R.id.mInputGoodsInfoByHand:
+                GoodsActivity.actionStart(this, null);
             default:
                 break;
         }
@@ -84,50 +101,48 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     public void init() {
         app = (MyApplication) getApplication();
-        // Permission has already been granted
-        try {
-            app.goodsMap = FileUtil.loadGoodsData(CommonConstant.PERSISTENCE_FILE_NAME);
-        } catch (Exception e) {
-            Log.e(TAG, "加载文件数据出错，请检查文件", e);
-        }
 
         searchGoodsInfoText = (EditText)findViewById(R.id.searchGoodsInfo);
 
-        searchGoodsIdOrNameInfoText = (EditText)findViewById(R.id.searchIdOrNameGoodsInfo);
+        searchGoodsNumOrNameInfoText = (EditText)findViewById(R.id.searchNumOrNameGoodsInfo);
 
         totalGoodsInfoTextView = findViewById(R.id.totalGoodsInfo);
-    }
 
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.scanGoodsInfo:
-                startActivity(new Intent(this, GoodsScanActivity.class));
-                break;
-            case R.id.btnSearchGoodsInfo:
-                searchGoodsInfo(view);
-                break;
-            case R.id.btnSearchIdOrNameGoodsInfo:
-                searchGoodsIdOrNameInfo(view);
-                break;
-            case R.id.goodsList:
-                GoodsItemListActivity.actionStart(this, null);
-                break;
-            default:
-                break;
-        }
+
+
+        btnSearchGoodsInfo = findViewById(R.id.btnSearchGoodsInfo);
+
+        btnSearchNumOrNameGoodsInfo = findViewById(R.id.btnSearchNumOrNameGoodsInfo);
+
+        btnSearchNumOrNameGoodsInfo.setOnClickListener(v -> searchGoodsNumOrNameInfo(v));
+
+        btnScanGoodsInfoTextView = findViewById(R.id.scanGoodsInfo);
+        btnScanGoodsInfoTextView.setOnClickListener(v -> GoodsScanActivity.actionStart(v.getContext()));
+
+
+        btnSearchGoodsInfo.setOnClickListener(v -> searchGoodsInfo(v));
+
+        goodsListTextView = findViewById(R.id.goodsList);
+        goodsListTextView.setOnClickListener(v -> GoodsItemListActivity.actionStart(v.getContext(), null));
+
     }
 
     public String matchGoodsNum(String searchGoodsNum) {
         Iterator<Map.Entry<String, GoodsDTO>> it = app.goodsMap.entrySet().iterator();
-        Map.Entry<String, GoodsDTO> goods;
-        String goodsId;
+        Map.Entry<String, GoodsDTO> goodsEntry;
+        GoodsDTO goods;
         String goodsNum;
+        String goodsShortNum;
         while (it.hasNext()) {
-            goods = it.next();
-            goodsId = goods.getKey();
-            goodsNum = GoodsDTO.getShortID(goodsId);
-            if (StringUtils.equals(goodsNum, searchGoodsNum)) {
-                return goodsId;
+            goodsEntry = it.next();
+            goodsNum = goodsEntry.getKey();
+            goods = goodsEntry.getValue();
+            goodsShortNum = GoodsDTO.defaultShortNum(goodsNum);
+            if (StringUtils.equals(goodsShortNum, searchGoodsNum)) {
+                return goodsNum;
+            }
+            if (StringUtils.equals(goods.getShortNum(), searchGoodsNum)) {
+                return goodsNum;
             }
         }
         return null;
@@ -162,7 +177,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
 
                 } else {
-                    Log.e(TAG, "拒绝授予权限，无法保存");
+                    Toast.makeText(this, "拒绝授予权限，无法保存", Toast.LENGTH_SHORT).show();
+//                    Log.e(TAG, "拒绝授予权限，无法保存");
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
@@ -186,27 +202,27 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     public void searchGoodsInfo(View view) {
-        String goodsId = searchGoodsInfoText.getText().toString().trim();
-        if (StringUtils.isBlank(goodsId)) {
+        String goodsNum = searchGoodsInfoText.getText().toString().trim();
+        if (StringUtils.isBlank(goodsNum)) {
             Toast.makeText(MainActivity.this, "商品编号不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String matchGoodsId = matchGoodsNum(goodsId);
-        if (matchGoodsId == null) {
+        String matchGoodsNum = matchGoodsNum(goodsNum);
+        if (matchGoodsNum == null) {
             Toast.makeText(MainActivity.this, "库中不存在此商品信息，请先录入", Toast.LENGTH_SHORT).show();
             searchGoodsInfoText.setText("");
             return;
         }
-        GoodsActivity.actionStart(this, matchGoodsId);
+        GoodsActivity.actionStart(this, matchGoodsNum);
     }
 
-    public void searchGoodsIdOrNameInfo(View view) {
-        String goodsIdOrName = searchGoodsIdOrNameInfoText.getText().toString().trim();
-        if (StringUtils.isBlank(goodsIdOrName)) {
+    public void searchGoodsNumOrNameInfo(View view) {
+        String goodsNumOrName = searchGoodsNumOrNameInfoText.getText().toString().trim();
+        if (StringUtils.isBlank(goodsNumOrName)) {
             Toast.makeText(MainActivity.this, "商品编号不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        GoodsItemListActivity.actionStart(this, goodsIdOrName);
+        GoodsItemListActivity.actionStart(this, goodsNumOrName);
     }
 }

@@ -8,6 +8,11 @@
         android:title="@string/scanGoodsInfo" />
     <item
         style="@style/MyMenu"
+        android:id="@+id/mInputGoodsInfoByHand"
+        android:icon="@color/colorPrimary"
+        android:title="@string/inputGoodsByHand" />
+    <item
+        style="@style/MyMenu"
         android:id="@+id/mScanGoodsDel"
         android:title="@string/scanGoodsInfoDel"
         android:background="@color/colorPrimary"

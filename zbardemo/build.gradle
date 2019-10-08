@@ -8,6 +8,12 @@ android {
             keyAlias = 'key1'
             keyPassword '123456'
         }
+        debug {
+            storeFile file('/Users/xiaowei.song/opensource-workspace/BGAQRCode-Android/zxingdemo/zxingdemo.jks')
+            storePassword '123456'
+            keyAlias = 'key1'
+            keyPassword '123456'
+        }
     }
     compileSdkVersion ANDROID_BUILD_SDK_VERSION as int
 

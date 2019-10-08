@@ -19,12 +19,28 @@
                     />
 
                 <EditText
-                    android:id="@+id/goodsId"
+                    android:id="@+id/goodsNum"
                     style="@style/ItemValueAutoWrapTv"
                     android:ems="10"
                     android:enabled="false"
                     android:inputType="number" />
+            </LinearLayout>
 
+            <LinearLayout
+                style="@style/MatchWrap.Horizontal"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    style="@style/ItemKeyAutoWrapTv"
+                    android:text="商品货号"
+                    />
+
+                <EditText
+                    android:id="@+id/goodsShortNum"
+                    style="@style/ItemValueAutoWrapTv"
+                    android:ems="10"
+                    android:enabled="true"
+                    android:inputType="text" />
             </LinearLayout>
 
             <LinearLayout

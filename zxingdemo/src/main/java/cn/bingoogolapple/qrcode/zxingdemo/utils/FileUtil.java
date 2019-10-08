@@ -1,9 +1,5 @@
 package cn.bingoogolapple.qrcode.zxingdemo.utils;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
@@ -15,6 +11,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
+import org.litepal.LitePal;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
@@ -109,7 +107,7 @@ public class FileUtil {
     }
 
     /**
-     * 读取csv中的数据，转换成map key: id value: goodsDTO
+     * 读取csv中的数据，转换成map key: num value: goodsDTO
      * @param fileName
      * @return
      * @throws IOException
@@ -124,12 +122,21 @@ public class FileUtil {
         for (CSVRecord record : records) {
             GoodsDTO goods = csvRecord2GoodsDTO(record);
             if (goods != null) {
-                goodsMap.put(goods.getId(), goods);
+                goodsMap.put(goods.getNum(), goods);
             }
         }
 
         inputStreamReader.close();
         fileInputStream.close();
+        return goodsMap;
+    }
+
+    public static Map<String, GoodsDTO> loadGoodsDataByDB() {
+        Map<String, GoodsDTO> goodsMap = new HashMap<>(100);
+        List<GoodsDTO> goodsDTOList =  LitePal.findAll(GoodsDTO.class);
+        for (GoodsDTO goods: goodsDTOList) {
+            goodsMap.put(goods.getNum(), goods);
+        }
         return goodsMap;
     }
 
@@ -143,7 +150,11 @@ public class FileUtil {
             return null;
         }
         GoodsDTO goods = new GoodsDTO();
-        goods.setId(csvRecord.get("编号"));
+        goods.setNum(csvRecord.get("编号"));
+        Log.e(TAG, "总列数为: " + csvRecord.size());
+        if (csvRecord.size() == 11) {
+            goods.setShortNum(csvRecord.get("货号"));
+        }
         goods.setName(csvRecord.get("名称"));
         goods.setCategory(csvRecord.get("类别"));
         goods.setTradePrice(Double.valueOf(csvRecord.get("批发价")));
@@ -182,7 +193,7 @@ public class FileUtil {
         CSVPrinter csvPrinter = null;
         try {
             csvPrinter = new CSVPrinter(csvWriter, CSVFormat.DEFAULT
-                    .withHeader("编号", "名称", "类别", "批发价", "库存数量", "建议零售价1", "建议零售价2", "建议零售价3", "图片",  "备注"));
+                    .withHeader("编号", "货号", "名称", "类别", "批发价", "库存数量", "建议零售价1", "建议零售价2", "建议零售价3", "图片",  "备注"));
         } catch (IOException e) {
             Log.e(TAG, "创建csv printer出错");
             return false;
@@ -192,7 +203,8 @@ public class FileUtil {
             GoodsDTO goods = goodsEntry.getValue();
             try {
                 csvPrinter.printRecord(
-                        goods.getId(),
+                        goods.getNum(),
+                        goods.getShortNum(),
                         goods.getName(),
                         goods.getCategory(),
                         goods.getTradePrice(),
@@ -203,7 +215,7 @@ public class FileUtil {
                         goods.getImagePath(),
                         goods.getRemark());
             } catch (IOException e) {
-                Log.e(TAG, String.format("写入csv printer出错, 错误数据为: %s", goods.getId()), e);
+                Log.e(TAG, String.format("写入csv printer出错, 错误数据为: %s", goods.getNum()), e);
                 try {
                     csvPrinter.flush();
                     csvPrinter.close();

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -16,6 +15,8 @@ import android.widget.TextView;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.litepal.FluentQuery;
+import org.litepal.LitePal;
 
 import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
 import cn.bingoogolapple.qrcode.zxingdemo.ui.common.GoodsActivity;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.SEARCH_GOODS_ID_OR_NAME;
+import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.SEARCH_GOODS_NUM_OR_NAME;
 
 /**
  * An activity representing a list of Items. This activity
@@ -47,9 +48,20 @@ public class GoodsItemListActivity extends AppCompatActivity {
 
     public static final int VIEW_TYPE = -1;
 
-    public static void actionStart(Context context, String goodsIdOrName) {
+    public static final int CURRENT_PAGE_SIZE = 10;
+
+    public static int CURRENT_PAGE = 0;
+
+    public static String queryFieldValue = "";
+
+    /**
+     * 不启用
+     */
+    public static int itemPosition = -1;
+
+    public static void actionStart(Context context, String goodsNumOrName) {
         Intent intent = new Intent(context, GoodsItemListActivity.class);
-        intent.putExtra(SEARCH_GOODS_ID_OR_NAME, goodsIdOrName);
+        intent.putExtra(SEARCH_GOODS_NUM_OR_NAME, goodsNumOrName);
         context.startActivity(intent);
     }
 
@@ -74,33 +86,65 @@ public class GoodsItemListActivity extends AppCompatActivity {
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
+        itemPosition = 0;
     }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        itemPosition = 0;
+    }
+
+    public static List<GoodsDTO> queryFromDB(String goodsNumOrName) {
+        FluentQuery fluentQuery = LitePal.where("1 = 1");
+        if (StringUtils.isNotBlank(goodsNumOrName)) {
+            fluentQuery = fluentQuery.where("shortNum=? or num like %?% or name like %?% ", goodsNumOrName, goodsNumOrName, goodsNumOrName);
+        }
+        List<GoodsDTO> goodsDTOList = fluentQuery.order("category")
+                .offset(CURRENT_PAGE)
+                .limit(CURRENT_PAGE_SIZE)
+                .find(GoodsDTO.class);
+        CURRENT_PAGE++;
+        return goodsDTOList;
+    }
+
+
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setItemViewCacheSize(200);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
 
-        String goodsIdOrName = getIntent().getStringExtra(SEARCH_GOODS_ID_OR_NAME);
+        String goodsNumOrName = getIntent().getStringExtra(SEARCH_GOODS_NUM_OR_NAME);
+
+        queryFieldValue = goodsNumOrName;
+
         boolean filter = true;
-        if (StringUtils.isBlank(goodsIdOrName)) {
+        if (StringUtils.isBlank(goodsNumOrName)) {
             filter = false;
         }
         MyApplication app = (MyApplication) this.getApplication();
         List<GoodsDTO> items = new ArrayList<>(app.goodsMap.size());
-        GoodsDTO goods;
-        for (Map.Entry<String, GoodsDTO> entry : app.goodsMap.entrySet()) {
-            goods = entry.getValue();
-            if (filter) {
-                if (StringUtils.containsIgnoreCase(goods.getId(), goodsIdOrName)) {
-                    items.add(goods);
-                } else if (StringUtils.containsIgnoreCase(goods.getName(), goodsIdOrName)) {
-                    items.add(goods);
-                }
-            } else {
-                items.add(goods);
-            }
-        }
+
+        // 查询货号相等的
+        items.addAll(queryFromDB(goodsNumOrName));
+
+//        GoodsDTO goods;
+//        for (Map.Entry<String, GoodsDTO> entry : app.goodsMap.entrySet()) {
+//            goods = entry.getValue();
+//            if (filter) {
+//                // 货号相等
+//                if (StringUtils.equals(goods.getShortNum(), goodsNumOrName)) {
+//                    items.add(goods);
+//                } else if (StringUtils.containsIgnoreCase(goods.getNum(), goodsNumOrName)) {
+//                    items.add(goods);
+//                } else if (StringUtils.containsIgnoreCase(goods.getName(), goodsNumOrName)) {
+//                    items.add(goods);
+//                }
+//            } else {
+//                items.add(goods);
+//            }
+//        }
         recyclerView.setAdapter(new GoodsItemRecyclerViewAdapter(this, items, mTwoPane));
     }
 
@@ -116,7 +160,7 @@ public class GoodsItemListActivity extends AppCompatActivity {
                 GoodsDTO item = (GoodsDTO) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(GoodsItemDetailFragment.ARG_ITEM_ID, item.getId());
+                    arguments.putString(GoodsItemDetailFragment.ARG_ITEM_ID, item.getNum());
                     GoodsItemDetailFragment fragment = new GoodsItemDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -124,9 +168,9 @@ public class GoodsItemListActivity extends AppCompatActivity {
                             .commit();
                 } else {
                     Context context = view.getContext();
-                    GoodsActivity.actionStart(context, item.getId());
+                    GoodsActivity.actionStart(context, item.getNum());
 //                    Intent intent = new Intent(context, ItemDetailActivity.class);
-//                    intent.putExtra(GoodsItemDetailFragment.ARG_ITEM_ID, item.getId());
+//                    intent.putExtra(GoodsItemDetailFragment.ARG_ITEM_ID, item.getNum());
 //
 //                    context.startActivity(intent);
                 }
@@ -161,21 +205,35 @@ public class GoodsItemListActivity extends AppCompatActivity {
             return super.getItemViewType(position);
         }
 
+
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ViewHolder) {
                 ViewHolder myHolder = (ViewHolder) holder;
-                String mCurrentImagePath = mGoodsList.get(position).getImagePath();
+                GoodsDTO goods = mGoodsList.get(position);
+                String mCurrentImagePath = goods.getImagePath();
                 if (StringUtils.isNotBlank(mCurrentImagePath)) {
                     FileUtil.setImage4ViewBitmap(myHolder.mGoodsImageView, mCurrentImagePath);
                 }
 
-                myHolder.mGoodsIdView.setText(mGoodsList.get(position).getId());
-                myHolder.mGoodsShortView.setText(GoodsDTO.getShortID(mGoodsList.get(position).getId()));
-                myHolder.mGoodsNameView.setText(mGoodsList.get(position).getName());
+                myHolder.mGoodsNumView.setText(goods.getNum());
+                if (StringUtils.isNotBlank(goods.getShortNum())) {
+                    myHolder.mGoodsShortNumView.setText(goods.getShortNum());
+                } else {
+                    myHolder.mGoodsShortNumView.setText(GoodsDTO.defaultShortNum(goods.getNum()));
+                }
 
-                myHolder.itemView.setTag(mGoodsList.get(position));
+                myHolder.mGoodsNameView.setText(goods.getName());
+
+                myHolder.itemView.setTag(goods);
                 myHolder.itemView.setOnClickListener(mOnClickListener);
+
+                // 加载下一页
+                if (position > (CURRENT_PAGE_SIZE * (CURRENT_PAGE + 1)  - 2) ) {
+                    // 加载出来
+                    mGoodsList.addAll(GoodsItemListActivity.queryFromDB(GoodsItemListActivity.queryFieldValue));
+
+                }
             }
         }
 
@@ -187,17 +245,22 @@ public class GoodsItemListActivity extends AppCompatActivity {
             return mGoodsList.size();
         }
 
+        @Override
+        public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+            super.onAttachedToRecyclerView(recyclerView);
+        }
+
         class ViewHolder extends RecyclerView.ViewHolder {
             final ImageView mGoodsImageView;
-            final TextView mGoodsIdView;
-            final TextView mGoodsShortView;
+            final TextView mGoodsNumView;
+            final TextView mGoodsShortNumView;
             final TextView mGoodsNameView;
 
             ViewHolder(View view) {
                 super(view);
                 mGoodsImageView = (ImageView)view.findViewById(R.id.goodsListImage);
-                mGoodsIdView = (TextView) view.findViewById(R.id.goodsListID);
-                mGoodsShortView = (TextView) view.findViewById(R.id.goodsListShortID);
+                mGoodsNumView = (TextView) view.findViewById(R.id.goodsListNum);
+                mGoodsShortNumView = (TextView) view.findViewById(R.id.goodsListShortNum);
                 mGoodsNameView = (TextView) view.findViewById(R.id.goodsListName);
             }
         }

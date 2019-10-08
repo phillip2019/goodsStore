@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <paths>
-        <external-path name="external_files" path="."/>
-    </paths>
-</resources>
+<paths xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="MissingDefaultResource">
+    <external-files-path name="storePath" path="com.wuyan.store" />
+    <external-path name="external" path="." />
+</paths>

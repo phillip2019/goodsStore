@@ -28,7 +28,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_btn_orange</item>
         <item name="android:layout_margin">10dp</item>
-        <item name="android:onClick">onClick</item>
+        <!--<item name="android:onClick">onClick</item>-->
         <item name="android:padding">8dp</item>
     </style>
 
@@ -38,7 +38,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_btn_orange</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:onClick">onClick</item>
+        <!--<item name="android:onClick">onClick</item>-->
         <item name="android:padding">4dp</item>
     </style>
 
@@ -47,7 +47,7 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_btn_orange</item>
-        <item name="android:onClick">onClick</item>
+        <!--<item name="android:onClick">onClick</item>-->
         <item name="android:padding">4dp</item>
     </style>
 
@@ -57,7 +57,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_btn_orange</item>
         <item name="android:layout_margin">10dp</item>
-        <item name="android:onClick">onClick</item>
+        <!--<item name="android:onClick">onClick</item>-->
         <item name="android:padding">8dp</item>
     </style>
 
@@ -81,7 +81,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_btn_orange</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:onClick">onClick</item>
+        <!--<item name="android:onClick">onClick</item>-->
         <item name="android:padding">4dp</item>
         <item name="android:layout_weight">4</item>
     </style>
@@ -92,7 +92,7 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_btn_orange</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:onClick">onClick</item>
+        <!--<item name="android:onClick">onClick</item>-->
         <item name="android:padding">4dp</item>
         <item name="android:layout_weight">6</item>
     </style>

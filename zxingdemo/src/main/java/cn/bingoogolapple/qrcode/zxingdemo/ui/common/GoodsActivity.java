@@ -3,13 +3,10 @@ package cn.bingoogolapple.qrcode.zxingdemo.ui.common;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,14 +16,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.litepal.LitePal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
@@ -34,11 +35,12 @@ import cn.bingoogolapple.qrcode.zxingdemo.DTO.GoodsDTO;
 import cn.bingoogolapple.qrcode.zxingdemo.MyApplication;
 import cn.bingoogolapple.qrcode.zxingdemo.R;
 import cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant;
+import cn.bingoogolapple.qrcode.zxingdemo.ui.list.GoodsItemListActivity;
 import cn.bingoogolapple.qrcode.zxingdemo.utils.FileUtil;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.CURRENT_GOODS_ID;
+import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.CURRENT_GOODS_NUM;
 import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.CURRENT_IMAGE_PATH;
 import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 import static cn.bingoogolapple.qrcode.zxingdemo.constant.CommonConstant.REQUEST_TAKE_PHOTO;
@@ -51,10 +53,13 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
 
     private String mCurrentImagePath = null;
 
-    private String mCurrentGoodsId;
+    private String mCurrentGoodsNum;
 
     // 商品编号编辑框
-    private EditText goodsIdView;
+    private EditText goodsNumView;
+
+    // 商品货号编辑框
+    private EditText goodsShortNumView;
 
     private EditText goodsCategoryView;
 
@@ -78,9 +83,9 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
 
     private ZXingView mZXingView;
 
-    public static void actionStart(Context context, String goodsId) {
+    public static void actionStart(Context context, String goodsNum) {
         Intent intent = new Intent(context, GoodsActivity.class);
-        intent.putExtra(CURRENT_GOODS_ID, goodsId);
+        intent.putExtra(CURRENT_GOODS_NUM, goodsNum);
         context.startActivity(intent);
     }
 
@@ -97,36 +102,75 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
         goodsImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (v.getId() == R.id.goodsImage) {
-                    dispatchTakePictureIntent();
-                } else {
+                if (!preCheck()) {
                     return false;
                 }
+
+                dispatchTakePictureIntent();
                 return true;
             }
         });
 
         final Intent bigImageIntent = new Intent(this, GoodsImageActivity.class);
-        // 单击，若存在图片，则放大
+
+
+        // 添加单击事件，若存在图片，则放大
         goodsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG, "单击了图片信息" + mCurrentImagePath);
-                if (StringUtils.isNotBlank(mCurrentImagePath)) {
-                    bigImageIntent.putExtra(CURRENT_GOODS_ID, mCurrentGoodsId);
+                if (!preCheck()) {
+                    return;
+                }
+
+//                if (StringUtils.isNotBlank(mCurrentImagePath) && StringUtils.isNotBlank(mCurrentGoodsNum)) {
+//                    Intent photoIntent =new Intent(Intent.ACTION_VIEW);
+//                    File photoFile = new File(mCurrentImagePath);
+//                    Uri imageUri = FileProvider.getUriForFile(v.getContext(), "cn.bingoogolapple.qrcode.zxingdemo.fileprovider", photoFile);
+//                    Log.e(TAG, "FileProvider生成的文件格式名为: " + imageUri.toString());
+//                    photoIntent.setDataAndType(imageUri,"image/*");
+//                    photoIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    startActivity(photoIntent);
+//                }
+                if (StringUtils.isNotBlank(mCurrentImagePath) && StringUtils.isNotBlank(mCurrentGoodsNum)) {
+                    bigImageIntent.putExtra(CURRENT_GOODS_NUM, mCurrentGoodsNum);
                     bigImageIntent.putExtra(CURRENT_IMAGE_PATH, mCurrentImagePath);
                     startActivity(bigImageIntent);
                 }
 
             }
         });
+
         btnGoodsSaveTextView.setOnClickListener(v -> {
+            if (!preCheck()) {
+                return;
+            }
+
             GoodsDTO goods = view2Data();
             // 按下保存按钮，将数据塞入到application context的map中
-            goodsMap.put(goods.getId(), goods);
+            goodsMap.put(goods.getNum(), goods);
             FileUtil.dumpsGoodsData(CommonConstant.PERSISTENCE_FILE_NAME, goodsMap);
+
+            //查询库，查看是否存在，润存在则，更新；反之新增
+            boolean flag = goods.saveOrUpdate("num = ?", goods.getNum());
+            if (!flag) {
+                Toast.makeText(this,
+                        String.format("此商品添加或修改失败，商品编号为: {}", goods.getNum()),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 添加成功，跳转到主页面
+            GoodsItemListActivity.actionStart(this, goods.getNum());
         });
 
+    }
+
+    private boolean preCheck() {
+        Log.i(TAG, "当前商品号为: " + mCurrentGoodsNum);
+        if (StringUtils.isBlank(mCurrentGoodsNum)) {
+            Toast.makeText(this, "请先输入商品编号", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -140,7 +184,19 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
     // 初始化
     private void init() {
         // 得到相应控件引用
-        goodsIdView = (EditText)findViewById(R.id.goodsId);
+        goodsNumView = (EditText)findViewById(R.id.goodsNum);
+        goodsNumView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // 失去焦点，回填mCurrentGoodsNum信息
+                if (!hasFocus) {
+                    goodsNumView.setText(StringUtils.trim(goodsNumView.getText().toString()));
+                    mCurrentGoodsNum = goodsNumView.getText().toString();
+                }
+            }
+        });
+
+        goodsShortNumView = (EditText)findViewById(R.id.goodsShortNum);
         goodsCategoryView = (EditText)findViewById(R.id.goodsCategory);
         goodsNameView = (EditText)findViewById(R.id.goodsName);
         goodsTradePriceView = (EditText)findViewById(R.id.tradePrice);
@@ -156,17 +212,48 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
         goodsMap = app.goodsMap;
     }
 
+    private static String generateGoodsNum() {
+        List<String> goodsNumList = new ArrayList<>(2);
+        goodsNumList.add("697");
+        Random random = new Random();
+        long randomLongValue = random.nextInt(1000000000);
+        String goodsNumPart2 = String.format("%9d", randomLongValue);
+        goodsNumList.add(goodsNumPart2);
+        return StringUtils.join(goodsNumList, "");
+    }
+
     private void getGoodsNum() {
         // 获取传递的商品编号
         Intent goodsIntent = getIntent();
-        String goodsNum = goodsIntent.getStringExtra(CURRENT_GOODS_ID);
-        mCurrentGoodsId = goodsNum;
-        goodsIdView.setText(goodsNum);
+        String goodsNum = goodsIntent.getStringExtra(CURRENT_GOODS_NUM);
+        mCurrentGoodsNum = goodsNum;
 
-        if (goodsMap.containsKey(goodsNum)) {
+        // 若手动录入，则不存在当前货物一维码编号，手动录入货物一维码编号
+        if (StringUtils.isBlank(mCurrentGoodsNum)) {
+            // 允许更改商品编号
+            goodsNumView.setEnabled(true);
+
+            // 自动生成商品编号
+            String generatorGoodsNum = null;
+            while (StringUtils.isBlank(generatorGoodsNum) || goodsMap.containsKey(generatorGoodsNum)) {
+                generatorGoodsNum = generateGoodsNum();
+            }
+            mCurrentGoodsNum = generatorGoodsNum;
+            goodsNumView.setText(mCurrentGoodsNum);
+            return;
+        }
+
+        goodsNumView.setText(goodsNum);
+        // 数据库中查询
+        List<GoodsDTO> goodsDTOList = LitePal.where("num = ? ", goodsNum).find(GoodsDTO.class);
+        if (goodsDTOList != null && goodsDTOList.size() > 0) {
+            GoodsDTO goods = goodsDTOList.get(0);
             Log.e(TAG, "已存储此商品信息");
-            GoodsDTO goods = goodsMap.get(goodsNum);
             assert goods != null;
+            if (StringUtils.isBlank(goods.getShortNum())) {
+                goods.setShortNum(GoodsDTO.defaultShortNum(goods.getNum()));
+            }
+            goodsShortNumView.setText(goods.getShortNum());
             goodsCategoryView.setText(goods.getCategory());
             goodsNameView.setText(goods.getName());
             goodsTradePriceView.setText(String.valueOf(goods.getTradePrice()));
@@ -192,7 +279,7 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile = FileUtil.getDownloadStorage4Image(goodsIdView.getText().toString());
+                photoFile = FileUtil.getDownloadStorage4Image(goodsNumView.getText().toString());
 
                 // 获取当前图像路径
                 mCurrentImagePath = photoFile.getAbsolutePath();
@@ -271,39 +358,6 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
         Log.e(TAG, "打开相机出错");
     }
 
-    public boolean onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnGoodsSave:
-                GoodsDTO goods = view2Data();
-
-                // 按下保存按钮，将数据塞入到application context的map中
-                goodsMap.put(goods.getId(), goods);
-                // Here, thisActivity is the current activity
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    // No explanation needed; request the permission
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                } else {
-                    // Permission has already been granted
-                    FileUtil.dumpsGoodsData(CommonConstant.PERSISTENCE_FILE_NAME, goodsMap);
-                }
-                break;
-            case R.id.goodsImage:
-                Log.e(TAG, "单击了图片信息");
-                Intent bigImageIntent = new Intent(this, GoodsImageActivity.class);
-                bigImageIntent.putExtra(CURRENT_GOODS_ID, mCurrentGoodsId);
-                bigImageIntent.putExtra(CURRENT_IMAGE_PATH, mCurrentImagePath);
-                startActivity(bigImageIntent);
-                break;
-        default:
-            break;
-        }
-        return true;
-    }
-
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
         return super.onKeyLongPress(keyCode, event);
@@ -312,7 +366,11 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
 
     private GoodsDTO view2Data() {
         GoodsDTO goods = new GoodsDTO();
-        String id = goodsIdView.getText().toString();
+        String num = goodsNumView.getText().toString();
+        String shortNum = goodsShortNumView.getText().toString();
+        if (StringUtils.isBlank(shortNum)) {
+            shortNum = GoodsDTO.defaultShortNum(num);
+        }
         String category = goodsCategoryView.getText().toString();
         String name = goodsNameView.getText().toString();
         Integer counts = 0;
@@ -331,8 +389,8 @@ public class GoodsActivity extends AppCompatActivity implements QRCodeView.Deleg
         }
         String remark = goodsRemark.getText().toString();
 
-
-        goods.setId(id);
+        goods.setNum(num);
+        goods.setShortNum(shortNum);
         goods.setCategory(category);
         goods.setName(name);
         goods.setCounts(counts);

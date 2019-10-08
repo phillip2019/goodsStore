@@ -10,13 +10,22 @@
     <LinearLayout
         style="@style/MatchMatch.Vertical">
 
-        <ImageView
+        <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/bigGoodsImage"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
             android:contentDescription="@string/bigGoodsImageText"
-            android:src="@mipmap/holder" />
+            android:adjustViewBounds="true"
+            android:src="@mipmap/holder"/>
+
+        <!--<ImageView-->
+            <!--android:id="@+id/bigGoodsImage"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="0dp"-->
+            <!--android:contentDescription="@string/bigGoodsImageText"-->
+            <!--android:src="@mipmap/holder" />-->
     </LinearLayout>
     </ScrollView>
 </LinearLayout>

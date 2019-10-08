@@ -1,45 +1,70 @@
 package cn.bingoogolapple.qrcode.zxingdemo.DTO;
 
+import org.litepal.annotation.Column;
+import org.litepal.crud.LitePalSupport;
+
 import java.io.Serializable;
 
-public class GoodsDTO implements Serializable {
+public class GoodsDTO extends LitePalSupport implements Serializable {
 
     // 编号
-    private String id;
+    @Column(unique = true, nullable = false)
+    private String num;
+
+    // 货号
+    @Column(unique = false, nullable = false)
+    private String shortNum;
 
     // 类别
+    @Column()
     private String category;
 
     // 名字
+    @Column()
     private String name;
 
     // 商品库存数量
+    @Column(defaultValue = "0")
     private Integer counts;
 
     // 批发价
+    @Column(defaultValue = "0.0")
     private Double tradePrice;
 
     // 建议零售价1
+    @Column(defaultValue = "0.0")
     private Double retailPrice1;
 
     // 建议零售价2
+    @Column(defaultValue = "0.0")
     private Double retailPrice2;
 
     // 建议零售价3
+    @Column(defaultValue = "0.0")
     private Double retailPrice3;
 
     // 图像存储路径
+    @Column()
     private String imagePath;
 
     // 备注
+    @Column()
     private String remark;
 
-    public String getId() {
-        return id;
+    public String getNum() {
+        return num;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setNum(String num) {
+        this.num = num;
+    }
+
+    public String getShortNum() {
+        return shortNum;
+    }
+
+    public void setShortNum(String shortNum) {
+        this.shortNum = shortNum;
     }
 
     public String getCategory() {
@@ -117,11 +142,11 @@ public class GoodsDTO implements Serializable {
 
     /**
      * 简短商品编号
-     * @param id
+     * @param num
      * @return
      */
-    public static String getShortID(String id) {
+    public static String defaultShortNum(String num) {
         // 提取商品id最后4位商品编号
-        return id.substring(id.length() - 5, id.length() - 1);
+        return num.substring(num.length() - 5, num.length() - 1);
     }
 }

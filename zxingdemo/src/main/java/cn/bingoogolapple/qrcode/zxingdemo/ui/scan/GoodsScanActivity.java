@@ -1,12 +1,14 @@
 package cn.bingoogolapple.qrcode.zxingdemo.ui.scan;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
 import cn.bingoogolapple.qrcode.core.QRCodeView;
@@ -19,6 +21,11 @@ public class GoodsScanActivity extends AppCompatActivity implements QRCodeView.D
     private static final int REQUEST_CODE_CHOOSE_QRCODE_FROM_GALLERY = 666;
 
     private ZXingView mZXingView;
+
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, GoodsScanActivity.class);
+        context.startActivity(intent);
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,9 +64,9 @@ public class GoodsScanActivity extends AppCompatActivity implements QRCodeView.D
     }
 
     @Override
-    public void onScanQRCodeSuccess(String goodsId) {
-        Log.i(TAG, "goodsId:" + goodsId);
-        GoodsActivity.actionStart(this, goodsId);
+    public void onScanQRCodeSuccess(String goodsNum) {
+        Log.i(TAG, "goodsNum:" + goodsNum);
+        GoodsActivity.actionStart(this, goodsNum);
         finish();
     }
 
@@ -82,7 +89,7 @@ public class GoodsScanActivity extends AppCompatActivity implements QRCodeView.D
 
     @Override
     public void onScanQRCodeOpenCameraError() {
-        Log.e(TAG, "打开相机出错");
+        Toast.makeText(this, "打开相机出错,请重新再试!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -95,7 +102,6 @@ public class GoodsScanActivity extends AppCompatActivity implements QRCodeView.D
             final String picturePath = BGAPhotoPickerActivity.getSelectedPhotos(data).get(0);
             // 本来就用到 QRCodeView 时可直接调 QRCodeView 的方法，走通用的回调
             mZXingView.decodeQRCode(picturePath);
-
         }
     }
 
